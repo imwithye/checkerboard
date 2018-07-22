@@ -79,8 +79,19 @@ static int png_encode_file(lua_State *L)
     unsigned char *image = (unsigned char *)lua_touserdata(L, -1);
     const char *filename = luaL_checkstring(L, 2);
     unsigned int error = lodepng_encode32_file(filename, image, width, height);
-    lua_pushboolean(L, error == 0);
-    return 1;
+    if (error)
+    {
+        lua_pushboolean(L, 0);
+        const char *error_message = lodepng_error_text(error);
+        lua_pushstring(L, error_message);
+        return 2;
+    }
+    else
+    {
+        lua_pushboolean(L, 1);
+        lua_pushnil(L);
+        return 2;
+    }
 }
 
 static int png_dispose(lua_State *L)

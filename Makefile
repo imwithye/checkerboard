@@ -13,6 +13,6 @@ lodepng.o: lodepng.c lodepng.h
 	$(CC) $(CFLAGS) -o lodepng.o -c lodepng.c
 
 clean:
-	rm -rf *.so *.o
+	rm -rf *.so *.o test_result_*
 
 .PHONY: clean
