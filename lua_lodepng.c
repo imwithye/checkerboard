@@ -26,9 +26,9 @@ static int decode32_file(lua_State *L)
     }
     else
     {
-        lua_pushliteral(L, "yeah~");
-        lua_pushinteger(L, 0);
-        lua_pushinteger(L, 0);
+        lua_pushlightuserdata(L, image);
+        lua_pushinteger(L, width);
+        lua_pushinteger(L, height);
         lua_pushinteger(L, error);
         return 4;
     }
