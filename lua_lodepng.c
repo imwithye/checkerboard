@@ -11,24 +11,44 @@
 
 static int png_at(lua_State *L)
 {
-    lua_getfield(L, -1, "width");
-    const int width = luaL_checkinteger(L, -1);
-    lua_getfield(L, -2, "height");
-    const int height = luaL_checkinteger(L, -1);
-    printf("width = %d, height = %d\n", width, height);
-    return 0;
+    lua_getfield(L, -3, "width");
+    lua_Integer width = luaL_checkinteger(L, -1);
+    lua_getfield(L, -4, "height");
+    lua_Integer height = luaL_checkinteger(L, -1);
+    lua_getfield(L, -5, "data");
+    unsigned char *image = (unsigned char *)lua_touserdata(L, -1);
+
+    lua_Integer x = luaL_checkinteger(L, -5);
+    lua_Integer y = luaL_checkinteger(L, -4);
+
+    if (x < 0 || x >= width || y < 0 || y >= height)
+    {
+        lua_pushinteger(L, 0), lua_pushinteger(L, 0), lua_pushinteger(L, 0),
+            lua_pushinteger(L, 0);
+        return 4;
+    }
+
+    lua_Integer index = (x * height + y) * 4;
+    lua_pushinteger(L, (unsigned int)image[index]);
+    lua_pushinteger(L, (unsigned int)image[index + 1]);
+    lua_pushinteger(L, (unsigned int)image[index + 2]);
+    lua_pushinteger(L, (unsigned int)image[index + 3]);
+
+    return 4;
 }
 
 static int png_tostring(lua_State *L)
 {
     lua_getfield(L, -1, "width");
-    const int width = luaL_checkinteger(L, -1);
+    lua_Integer width = luaL_checkinteger(L, -1);
     lua_getfield(L, -2, "height");
-    const int height = luaL_checkinteger(L, -1);
+    lua_Integer height = luaL_checkinteger(L, -1);
 
     char buffer[512];
-    sprintf(buffer, PNG_METATABLE"<width = %d, height = %d, data length = %d bytes>", width,
-            height, width * height * 4);
+    sprintf(buffer,
+            PNG_METATABLE
+            "<width = %lld, height = %lld, data length = %lld bytes>",
+            width, height, width * height * 4);
     lua_pushstring(L, buffer);
     return 1;
 }
@@ -47,7 +67,7 @@ static int decode32(lua_State *L)
 
     unsigned error;
     unsigned char *image;
-    unsigned width, height;
+    unsigned int width, height;
     error = lodepng_decode32(&image, &width, &height, pngfile, pngsize);
     if (error)
     {
@@ -64,7 +84,7 @@ static int decode32(lua_State *L)
         lua_pushinteger(L, height);
         lua_settable(L, -3);
         lua_pushliteral(L, "data");
-        lua_pushlstring(L, (char *)image, width * height * 4);
+        lua_pushlightuserdata(L, image);
         lua_settable(L, -3);
         luaL_setmetatable(L, PNG_METATABLE);
         return 1;
