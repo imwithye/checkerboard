@@ -8,17 +8,18 @@
 
 static int decode32_file(lua_State *L)
 {
+    (void)(L);
     printf("lodepng_decode32_file\n");
     return 0;
 }
 
-static const luaL_Reg loadpng[] = {
+static const luaL_Reg lodepng[] = {
     {"lodepng_decode32_file", decode32_file},
     {NULL, NULL},
 };
 
-LUAMOD_API int luaopen_loadpng(lua_State *L)
+LUAMOD_API int luaopen_lodepng(lua_State *L)
 {
-    luaL_newlib(L, loadpng);
+    luaL_newlib(L, lodepng);
     return 1;
 }
