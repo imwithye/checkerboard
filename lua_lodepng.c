@@ -69,6 +69,20 @@ static int png_set(lua_State *L)
     return 0;
 }
 
+static int png_encode_file(lua_State *L)
+{
+    lua_getfield(L, 1, "width");
+    lua_Integer width = luaL_checkinteger(L, -1);
+    lua_getfield(L, 1, "height");
+    lua_Integer height = luaL_checkinteger(L, -1);
+    lua_getfield(L, 1, "data");
+    unsigned char *image = (unsigned char *)lua_touserdata(L, -1);
+    const char *filename = luaL_checkstring(L, 2);
+    unsigned int error = lodepng_encode32_file(filename, image, width, height);
+    lua_pushboolean(L, error == 0);
+    return 1;
+}
+
 static int png_dispose(lua_State *L)
 {
     lua_getfield(L, 1, "data");
@@ -96,6 +110,7 @@ static int png_tostring(lua_State *L)
 static const luaL_Reg png[] = {
     {"at", png_at},
     {"set", png_set},
+    {"encode_file", png_encode_file},
     {"dispose", png_dispose},
     {"__tostring", png_tostring},
     {NULL, NULL},

@@ -10,4 +10,6 @@ print(png:at(0, 0))
 png:set(0, 0, png:at(1, 0))
 print(png:at(0, 0))
 
+png:encode_file("test_result_sample.png")
+
 png:dispose()
