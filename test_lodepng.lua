@@ -1,3 +1,7 @@
 local lodepng = require "lodepng"
 
-lodepng.lodepng_decode32_file()
+local result, width, height = lodepng.decode32_file("test\n")
+if error then
+    message = lodepng.error_text(error)
+    print(message)
+end
