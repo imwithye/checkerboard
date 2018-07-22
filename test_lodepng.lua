@@ -1,9 +1,8 @@
-local string = require "string"
 local lodepng = require "lodepng"
 
-local result, width, height, error_code = lodepng.decode32_file("test_png.png")
-if error_code ~= 0 then
-    print("err: " .. lodepng.error_text(error_code))
-    return
-end
-print(string.format("png width = %s, height = %s", width, height))
+local file = assert(io.open("test_png.png", "rb"))
+local file_data = file:read("*all")
+file:close()
+
+local png, width, height = lodepng.decode32(file_data)
+print(string.format("png width = %s, height = %s, data length = %d", width, height, string.len(png)))
