@@ -1,11 +1,8 @@
 local lodepng = require "lodepng"
 
-local file = assert(io.open("test_sample.png", "rb"))
-local file_data = file:read("*all")
-file:close()
-
-local png = lodepng.decode32(file_data)
+local png, error = lodepng.decode_file("test_sample.png")
 print(png)
+print(error)
 print(png:at(0, 0))
 png:set(0, 0, png:at(1, 0))
 print(png:at(0, 0))

@@ -116,20 +116,19 @@ static const luaL_Reg png[] = {
     {NULL, NULL},
 };
 
-static int decode32(lua_State *L)
+static int decode(lua_State *L)
 {
-    size_t pngsize;
-    const unsigned char *pngfile =
-        (const unsigned char *)lua_tolstring(L, 1, &pngsize);
-
-    unsigned error;
-    unsigned char *image;
+    const char *filename = luaL_checkstring(L, 1);
     unsigned int width, height;
-    error = lodepng_decode32(&image, &width, &height, pngfile, pngsize);
+    unsigned char *image;
+    unsigned int error = lodepng_decode32_file(&image, &width, &height, filename);
+
     if (error)
     {
         lua_pushnil(L);
-        return 1;
+        const char *error_message = lodepng_error_text(error);
+        lua_pushstring(L, error_message);
+        return 2;
     }
     else
     {
@@ -144,12 +143,13 @@ static int decode32(lua_State *L)
         lua_pushlightuserdata(L, image);
         lua_settable(L, -3);
         luaL_setmetatable(L, PNG_METATABLE);
-        return 1;
+        lua_pushnil(L);
+        return 2;
     }
 }
 
 static const luaL_Reg lodepng[] = {
-    {"decode32", decode32},
+    {"decode_file", decode},
     {NULL, NULL},
 };
 
