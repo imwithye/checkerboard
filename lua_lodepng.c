@@ -2,7 +2,9 @@
 #define LUA_LIB
 
 #include <lua/lauxlib.h>
+#include <lua/lualib.h>
 #include <lua/lua.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -127,7 +129,7 @@ static const luaL_Reg png[] = {
     {NULL, NULL},
 };
 
-static int decode(lua_State *L)
+static int decode_file(lua_State *L)
 {
     const char *filename = luaL_checkstring(L, 1);
     unsigned int width, height;
@@ -160,7 +162,7 @@ static int decode(lua_State *L)
 }
 
 static const luaL_Reg lodepng[] = {
-    {"decode_file", decode},
+    {"decode_file", decode_file},
     {NULL, NULL},
 };
 
