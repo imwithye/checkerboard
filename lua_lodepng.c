@@ -28,7 +28,7 @@ static int png_at(lua_State *L)
         return 4;
     }
 
-    lua_Integer index = (x * height + y) * 4;
+    lua_Integer index = (y * width + x) * 4;
     lua_pushinteger(L, (unsigned int)image[index]);
     lua_pushinteger(L, (unsigned int)image[index + 1]);
     lua_pushinteger(L, (unsigned int)image[index + 2]);
