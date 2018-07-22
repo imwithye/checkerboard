@@ -20,18 +20,21 @@ static int decode32(lua_State *L)
     if (error)
     {
         lua_pushnil(L);
-        lua_pushinteger(L, 0);
-        lua_pushinteger(L, 0);
-        lua_pushinteger(L, error);
-        return 4;
+        return 1;
     }
     else
     {
-        lua_pushlstring(L, (char *)image, width * height * 4);
+        lua_newtable(L);
+        lua_pushliteral(L, "width");
         lua_pushinteger(L, width);
+        lua_settable(L, -3);
+        lua_pushliteral(L, "height");
         lua_pushinteger(L, height);
-        lua_pushinteger(L, error);
-        return 4;
+        lua_settable(L, -3);
+        lua_pushliteral(L, "data");
+        lua_pushlstring(L, (char *)image, width * height * 4);
+        lua_settable(L, -3);
+        return 1;
     }
 }
 
