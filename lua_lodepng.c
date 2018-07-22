@@ -4,6 +4,7 @@
 #include <lua/lauxlib.h>
 #include <lua/lua.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "lodepng.h"
 
@@ -68,6 +69,14 @@ static int png_set(lua_State *L)
     return 0;
 }
 
+static int png_dispose(lua_State *L)
+{
+    lua_getfield(L, 1, "data");
+    unsigned char *image = (unsigned char *)lua_touserdata(L, -1);
+    free(image);
+    return 0;
+}
+
 static int png_tostring(lua_State *L)
 {
     lua_getfield(L, -1, "width");
@@ -87,6 +96,7 @@ static int png_tostring(lua_State *L)
 static const luaL_Reg png[] = {
     {"at", png_at},
     {"set", png_set},
+    {"dispose", png_dispose},
     {"__tostring", png_tostring},
     {NULL, NULL},
 };
