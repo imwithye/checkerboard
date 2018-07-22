@@ -7,6 +7,31 @@
 
 #include "lodepng.h"
 
+static int load_file(lua_State *L)
+{
+    size_t filename_length;
+    const char *filename = luaL_checklstring(L, 1, &filename_length);
+
+    unsigned error;
+    unsigned char *pngfile;
+    size_t pngsize;
+    error = lodepng_load_file(&pngfile, &pngsize, filename);
+    if (error)
+    {
+        lua_pushnil(L);
+        lua_pushinteger(L, 0);
+        lua_pushinteger(L, error);
+        return 3;
+    }
+    else
+    {
+        lua_pushlightuserdata(L, pngfile);
+        lua_pushinteger(L, pngsize);
+        lua_pushinteger(L, error);
+        return 3;
+    }
+}
+
 static int decode32_file(lua_State *L)
 {
     size_t filename_length;
@@ -34,6 +59,33 @@ static int decode32_file(lua_State *L)
     }
 }
 
+static int decode32(lua_State *L)
+{
+    const unsigned char *pngfile = lua_touserdata(L, 1);
+    const size_t pngsize = lua_tointeger(L, 2);
+
+    unsigned error;
+    unsigned char *image;
+    unsigned width, height;
+    error = lodepng_decode32(&image, &width, &height, pngfile, pngsize);
+    if (error)
+    {
+        lua_pushnil(L);
+        lua_pushinteger(L, 0);
+        lua_pushinteger(L, 0);
+        lua_pushinteger(L, error);
+        return 4;
+    }
+    else
+    {
+        lua_pushlightuserdata(L, image);
+        lua_pushinteger(L, width);
+        lua_pushinteger(L, height);
+        lua_pushinteger(L, error);
+        return 4;
+    }
+}
+
 static int error_text(lua_State *L)
 {
     const int error_code = luaL_checkinteger(L, 1);
@@ -43,7 +95,9 @@ static int error_text(lua_State *L)
 }
 
 static const luaL_Reg lodepng[] = {
+    {"load_file", load_file},
     {"decode32_file", decode32_file},
+    {"decode32", decode32},
     {"error_text", error_text},
     {NULL, NULL},
 };
